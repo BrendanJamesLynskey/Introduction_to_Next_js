@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Next.js</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
+<style>
+  :root {
+    --amber:  #f5a623;
+    --green:  #4ecb8d;
+    --purple: #a78bfa;
+    --blue:   #60a5fa;
+    --red:    #f87171;
+    --bg:     #0a0a0f;
+    --bg2:    #10101a;
+    --bg3:    #181824;
+    --border: #2a2a3a;
+    --text:   #e8e8f0;
+    --muted:  #8888a8;
+  }
+
+  .reveal-viewport { background: var(--bg); }
+  .reveal .slides section { background: transparent; }
+
+  .reveal { font-family: 'DM Sans', sans-serif; color: var(--text); }
+  .reveal h1, .reveal h2, .reveal h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
+  .reveal h1 { font-size: 1.6em; color: var(--amber); line-height: 1.1; }
+  .reveal h2 { font-size: 1.1em; color: var(--amber); margin-bottom: .2em; }
+  .reveal h3 { font-size: .78em; color: var(--green); margin-bottom: .15em; }
+  .reveal p  { font-size: .56em; line-height: 1.45; color: var(--text); }
+  .reveal li { font-size: .54em; line-height: 1.45; margin-bottom: .1em; }
+  .reveal code { font-family: 'JetBrains Mono', monospace; font-size: .72em; }
+  .reveal pre  { box-shadow: none; background: var(--bg3); border: 1px solid var(--border);
+                 border-radius: 6px; padding: .3em .5em; margin: .25em 0; }
+  .reveal pre code { font-size: .52em; line-height: 1.35; background: transparent; color: #cdd6f4; }
+
+  .slide-hdr { display: flex; align-items: center; gap: .4em; border-bottom: 1px solid var(--border); padding-bottom: .2em; margin-bottom: .3em; }
+  .slide-hdr .tag { font-family: 'JetBrains Mono', monospace; font-size: .42em; font-weight: 500; color: var(--bg); background: var(--amber); padding: .1em .4em; border-radius: 3px; letter-spacing: .04em; }
+  .slide-hdr h2 { margin: 0; font-size: .95em; }
+
+  .cols   { display: grid; gap: .5em; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cols-6040 { grid-template-columns: 6fr 4fr; }
+  .cols-4060 { grid-template-columns: 4fr 6fr; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: .35em .6em; }
+  .card.amber { border-left: 3px solid var(--amber); }
+  .card.green { border-left: 3px solid var(--green); }
+  .card.purple{ border-left: 3px solid var(--purple); }
+  .card.blue  { border-left: 3px solid var(--blue); }
+  .card.red   { border-left: 3px solid var(--red); }
+  .card h3 { font-size: .64em; margin: 0 0 .12em; }
+  .card p  { font-size: .52em; margin: 0; color: #b8b8d0; }
+  .card ul { margin: 0; padding-left: 1em; }
+  .card li { font-size: .52em; color: #b8b8d0; margin-bottom: .02em; }
+
+  .reveal table { width: 100%; border-collapse: collapse; font-size: .5em; }
+  .reveal table th { background: var(--bg3); color: var(--amber); font-weight: 600; padding: .2em .4em; border: 1px solid var(--border); text-align: left; }
+  .reveal table td { padding: .18em .4em; border: 1px solid var(--border); color: #ccc; }
+  .reveal table tr:nth-child(even) td { background: #0e0e18; }
+
+  .a  { color: var(--amber); font-weight: 600; }
+  .g  { color: var(--green); font-weight: 600; }
+  .p  { color: var(--purple); font-weight: 600; }
+  .b  { color: var(--blue); font-weight: 600; }
+  .r  { color: var(--red); font-weight: 600; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  svg.diagram { display: block; margin: 0 auto; overflow: visible; }
+
+  .pill { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: .44em; padding: .08em .4em; border-radius: 99px; border: 1px solid; margin: 0 .08em; }
+  .pill.amber { color: var(--amber); border-color: var(--amber); }
+  .pill.green { color: var(--green); border-color: var(--green); }
+  .pill.purple{ color: var(--purple); border-color: var(--purple); }
+  .pill.blue  { color: var(--blue); border-color: var(--blue); }
+
+  .reveal .slide-footer { display: none; }
+  .title-slide h1 { font-size: 1.8em; }
+  .title-slide .subtitle {
+    font-size: .7em; color: var(--green); font-family: 'DM Sans', sans-serif;
+    font-weight: 300; letter-spacing: .04em; margin: .3em 0 .6em;
+  }
+  .title-slide .meta { font-size: .48em; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .reveal ul, .reveal ol { margin: .15em 0 .15em 1em; }
+  .reveal .slides > section { display: flex !important; flex-direction: column !important; overflow-y: auto !important; align-items: stretch !important; justify-content: flex-start !important; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+
+<!-- ═══════════════════════════════ SLIDE 01 — TITLE ═══════════════════════════════ -->
+<section class="title-slide" data-background-color="#0a0a0f">
+  <div style="text-align:left; max-width:820px; margin:0 auto; padding: 1em 0;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:.5em; color:var(--muted); margin-bottom:.4em; letter-spacing:.1em;">TECHNICAL PRESENTATION</div>
+    <h1>Introduction to<br>Next.js</h1>
+    <div class="subtitle">The Full-Stack React Framework</div>
+    <div style="width:60px; height:3px; background:var(--amber); margin-bottom:1.4em;"></div>
+    <div class="meta">App Router &middot; RSC &middot; SSR &middot; SSG &middot; API routes &middot; Vercel</div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 02 — AGENDA ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">02</span><h2>Agenda</h2></div>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Foundations</h3>
+      <ul>
+        <li>What is Next.js &amp; the App Router</li>
+        <li>App Router vs Pages Router</li>
+        <li>File-based routing conventions</li>
+        <li>Server Components vs Client Components</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Data &amp; Rendering</h3>
+      <ul>
+        <li>Data fetching &amp; caching</li>
+        <li>Server Actions &amp; mutations</li>
+        <li>SSR, SSG, ISR &amp; streaming</li>
+        <li>Layouts, templates &amp; error boundaries</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3>Features</h3>
+      <ul>
+        <li>Middleware &amp; edge functions</li>
+        <li>API Route Handlers</li>
+        <li>Styling approaches</li>
+        <li>Image &amp; font optimisation</li>
+      </ul>
+    </div>
+    <div class="card blue">
+      <h3>Production</h3>
+      <ul>
+        <li>Metadata &amp; SEO</li>
+        <li>Authentication patterns</li>
+        <li>Database &amp; ORM integration</li>
+        <li>Testing &amp; deployment</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 03 — WHAT IS NEXT.JS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">03</span><h2>What Is Next.js?</h2></div>
+  <p>Next.js is a <span class="a">full-stack React framework</span> created by <span class="g">Vercel</span> (formerly ZEIT) in 2016. It extends React with server-side rendering, static generation, file-based routing, and a powerful build system — letting teams ship production-grade web applications without stitching together dozens of tools.</p>
+  <div class="cols cols-3" style="margin-top:.3em;">
+    <div class="card amber">
+      <h3>History</h3>
+      <ul>
+        <li>2016 — First release (Pages Router)</li>
+        <li>2020 — ISR, Image component</li>
+        <li>2022 — App Router (v13 beta)</li>
+        <li>2023 — App Router stable (v13.4)</li>
+        <li>2024 — Partial Prerendering (v14/15)</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Key Features</h3>
+      <ul>
+        <li>React Server Components</li>
+        <li>File-based routing</li>
+        <li>Server Actions (mutations)</li>
+        <li>Automatic code splitting</li>
+        <li>Built-in image/font optimisation</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3>Who Uses It?</h3>
+      <ul>
+        <li>Vercel, Netflix, TikTok</li>
+        <li>Hulu, Notion, Twitch</li>
+        <li>Washington Post, Target</li>
+        <li>OpenAI, Stripe Dashboard</li>
+        <li>Most popular React framework</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card blue" style="margin-top:.3em;">
+    <h3>Next.js is NOT</h3>
+    <p>A replacement for React (it <em>uses</em> React) &bull; A backend-only framework (it's full-stack) &bull; Locked to Vercel (self-hosting is fully supported)</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 04 — APP ROUTER VS PAGES ROUTER ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">04</span><h2>App Router vs Pages Router</h2></div>
+  <p>Next.js has two routing systems. The <span class="a">App Router</span> (introduced in v13) is the recommended default. The <span class="p">Pages Router</span> remains fully supported for existing projects.</p>
+  <table style="margin-top:.3em;">
+    <thead>
+      <tr><th>Feature</th><th>App Router (<code>app/</code>)</th><th>Pages Router (<code>pages/</code>)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Server Components</td><td>Default (RSC)</td><td>Not supported</td></tr>
+      <tr><td>Layouts</td><td>Nested, persistent</td><td>Manual with <code>_app.tsx</code></td></tr>
+      <tr><td>Data Fetching</td><td><code>async</code> components, <code>fetch</code></td><td><code>getServerSideProps</code>, <code>getStaticProps</code></td></tr>
+      <tr><td>Streaming</td><td>Built-in with Suspense</td><td>Limited</td></tr>
+      <tr><td>Server Actions</td><td>Native support</td><td>Not available</td></tr>
+      <tr><td>Route Handlers</td><td><code>route.ts</code> files</td><td><code>pages/api/*.ts</code></td></tr>
+      <tr><td>Middleware</td><td>Supported</td><td>Supported</td></tr>
+    </tbody>
+  </table>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card amber">
+      <h3>Directory Structure (App Router)</h3>
+      <pre><code>app/
+  layout.tsx        # Root layout
+  page.tsx          # Home route (/)
+  about/
+    page.tsx        # /about
+  blog/
+    [slug]/
+      page.tsx      # /blog/:slug</code></pre>
+    </div>
+    <div class="card purple">
+      <h3>Migration Strategy</h3>
+      <ul>
+        <li>Both routers can coexist in one project</li>
+        <li>Migrate route-by-route incrementally</li>
+        <li>Move shared layouts first</li>
+        <li>Convert data fetching last</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 05 — FILE-BASED ROUTING ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">05</span><h2>File-Based Routing</h2></div>
+  <p>In the App Router, the <span class="a">file system is the router</span>. Each folder inside <code>app/</code> maps to a URL segment. Special files define behaviour at each route level.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Special Files</h3>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>page.tsx</code></td><td>Makes route publicly accessible</td></tr>
+          <tr><td><code>layout.tsx</code></td><td>Shared UI for a segment</td></tr>
+          <tr><td><code>loading.tsx</code></td><td>Suspense fallback UI</td></tr>
+          <tr><td><code>error.tsx</code></td><td>Error boundary for segment</td></tr>
+          <tr><td><code>not-found.tsx</code></td><td>404 UI for segment</td></tr>
+          <tr><td><code>route.ts</code></td><td>API endpoint (no UI)</td></tr>
+          <tr><td><code>template.tsx</code></td><td>Re-rendered layout variant</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card green">
+      <h3>Dynamic &amp; Advanced Routes</h3>
+      <pre><code class="language-plaintext"># Dynamic segments
+app/blog/[slug]/page.tsx     → /blog/hello-world
+
+# Catch-all
+app/docs/[...slug]/page.tsx  → /docs/a/b/c
+
+# Optional catch-all
+app/shop/[[...slug]]/page.tsx
+
+# Route groups (no URL impact)
+app/(marketing)/about/page.tsx
+app/(shop)/products/page.tsx
+
+# Parallel routes
+app/@modal/login/page.tsx
+app/@sidebar/page.tsx</code></pre>
+    </div>
+  </div>
+  <div class="card blue" style="margin-top:.3em;">
+    <h3>Colocation</h3>
+    <p>Only <code>page.tsx</code> and <code>route.ts</code> are publicly addressable. You can safely colocate components, tests, styles, and utilities inside route folders without exposing them as routes.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 06 — SERVER VS CLIENT COMPONENTS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">06</span><h2>Server Components vs Client Components</h2></div>
+  <p>In the App Router, components are <span class="a">Server Components by default</span>. Add <code class="g">"use client"</code> at the top of a file to make it a Client Component. The boundary between them is the <span class="p">serialisation boundary</span>.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Server Components (default)</h3>
+      <pre><code class="language-tsx">// app/users/page.tsx  (Server Component)
+import { db } from '@/lib/db';
+
+export default async function UsersPage() {
+  const users = await db.user.findMany();
+
+  return (
+    &lt;ul&gt;
+      {users.map(u =&gt; &lt;li key={u.id}&gt;{u.name}&lt;/li&gt;)}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+      <ul>
+        <li>Direct database/API access</li>
+        <li>Zero client-side JS bundle</li>
+        <li>Access secrets &amp; env vars safely</li>
+        <li>Cannot use hooks or browser APIs</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Client Components</h3>
+      <pre><code class="language-tsx">'use client';
+// components/counter.tsx
+
+import { useState } from 'react';
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;button onClick={() =&gt; setCount(c =&gt; c + 1)}&gt;
+      Count: {count}
+    &lt;/button&gt;
+  );
+}</code></pre>
+      <ul>
+        <li>Interactivity (onClick, onChange)</li>
+        <li>React hooks (useState, useEffect)</li>
+        <li>Browser APIs (localStorage, etc.)</li>
+        <li>Hydrated on the client</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card purple" style="margin-top:.3em;">
+    <h3>Rule of Thumb</h3>
+    <p>Keep components as <span class="a">Server Components</span> until you need interactivity. Push <code>"use client"</code> as far down the tree as possible — wrap only the interactive leaf, not the entire page.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 07 — DATA FETCHING ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">07</span><h2>Data Fetching</h2></div>
+  <p>In the App Router, data fetching happens inside <span class="a">async Server Components</span> using the standard <code>fetch</code> API. Next.js extends <code>fetch</code> with built-in <span class="g">caching</span> and <span class="p">revalidation</span>.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Fetch with Caching</h3>
+      <pre><code class="language-tsx">// Cached by default (static)
+const res = await fetch('https://api.example.com/data');
+
+// Revalidate every 60 seconds (ISR)
+const res = await fetch('https://api.example.com/data', {
+  next: { revalidate: 60 }
+});
+
+// No cache (dynamic / SSR)
+const res = await fetch('https://api.example.com/data', {
+  cache: 'no-store'
+});</code></pre>
+    </div>
+    <div class="card green">
+      <h3>generateStaticParams</h3>
+      <pre><code class="language-tsx">// app/blog/[slug]/page.tsx
+export async function generateStaticParams() {
+  const posts = await getPosts();
+  return posts.map(post =&gt; ({
+    slug: post.slug,
+  }));
+}
+
+export default async function BlogPost(
+  { params }: { params: { slug: string } }
+) {
+  const post = await getPost(params.slug);
+  return &lt;article&gt;{post.content}&lt;/article&gt;;
+}</code></pre>
+    </div>
+  </div>
+  <div class="card blue" style="margin-top:.3em;">
+    <h3>Caching Strategies at a Glance</h3>
+    <table>
+      <thead><tr><th>Strategy</th><th>Option</th><th>Behaviour</th></tr></thead>
+      <tbody>
+        <tr><td>Static (default)</td><td>No option needed</td><td>Cached at build time, served from CDN</td></tr>
+        <tr><td>ISR</td><td><code>next: { revalidate: N }</code></td><td>Stale-while-revalidate after N seconds</td></tr>
+        <tr><td>Dynamic</td><td><code>cache: 'no-store'</code></td><td>Fresh data on every request</td></tr>
+        <tr><td>Tag-based</td><td><code>next: { tags: ['posts'] }</code></td><td>Invalidated via <code>revalidateTag('posts')</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 08 — SERVER ACTIONS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">08</span><h2>Server Actions</h2></div>
+  <p>Server Actions let you define <span class="a">async functions that run on the server</span>, callable directly from Client or Server Components. Mark them with <code class="g">"use server"</code>. They replace the need for separate API endpoints for mutations.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Inline Server Action</h3>
+      <pre><code class="language-tsx">// app/posts/new/page.tsx (Server Component)
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { db } from '@/lib/db';
+
+export default function NewPost() {
+  async function createPost(formData: FormData) {
+    'use server';
+    const title = formData.get('title') as string;
+    await db.post.create({ data: { title } });
+    revalidatePath('/posts');
+    redirect('/posts');
+  }
+
+  return (
+    &lt;form action={createPost}&gt;
+      &lt;input name="title" required /&gt;
+      &lt;button type="submit"&gt;Create&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Separate Actions File</h3>
+      <pre><code class="language-tsx">// app/actions.ts
+'use server';
+
+import { revalidateTag } from 'next/cache';
+import { db } from '@/lib/db';
+
+export async function deletePost(id: string) {
+  await db.post.delete({ where: { id } });
+  revalidateTag('posts');
+}
+
+export async function toggleLike(postId: string) {
+  await db.like.toggle({ postId });
+  revalidateTag('posts');
+}</code></pre>
+      <ul>
+        <li>Can be imported by Client Components</li>
+        <li>Type-safe with TypeScript</li>
+        <li>Progressive enhancement (works without JS)</li>
+        <li>Automatic request deduplication</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card purple" style="margin-top:.3em;">
+    <h3>Key Benefits</h3>
+    <p><span class="a">No manual API layer</span> for mutations &bull; Built-in <span class="g">CSRF protection</span> &bull; Works with forms natively (progressive enhancement) &bull; Compose with <code>revalidatePath</code> and <code>revalidateTag</code> for cache invalidation</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 09 — RENDERING STRATEGIES ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">09</span><h2>Rendering Strategies</h2></div>
+  <p>Next.js supports multiple rendering strategies. The framework <span class="a">automatically chooses</span> between static and dynamic based on your data fetching, but you can control it explicitly.</p>
+  <div class="cols cols-3">
+    <div class="card amber">
+      <h3>SSG — Static Site Generation</h3>
+      <ul>
+        <li>Pages rendered at <span class="a">build time</span></li>
+        <li>HTML cached on CDN</li>
+        <li>Fastest TTFB</li>
+        <li>Use for marketing pages, docs, blogs</li>
+      </ul>
+      <pre><code class="language-tsx">// Static by default
+export default async function Page() {
+  const data = await fetch('...');
+  return &lt;div&gt;{data}&lt;/div&gt;;
+}</code></pre>
+    </div>
+    <div class="card green">
+      <h3>SSR — Server-Side Rendering</h3>
+      <ul>
+        <li>Rendered on <span class="g">every request</span></li>
+        <li>Always fresh data</li>
+        <li>Higher TTFB than SSG</li>
+        <li>Use for personalised content</li>
+      </ul>
+      <pre><code class="language-tsx">// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
+export default async function Page() {
+  const data = await fetch('...', {
+    cache: 'no-store'
+  });
+  return &lt;div&gt;{data}&lt;/div&gt;;
+}</code></pre>
+    </div>
+    <div class="card purple">
+      <h3>ISR — Incremental Static Regen</h3>
+      <ul>
+        <li>Static + <span class="p">time-based revalidation</span></li>
+        <li>Stale-while-revalidate pattern</li>
+        <li>Best of SSG and SSR</li>
+        <li>Use for content that changes periodically</li>
+      </ul>
+      <pre><code class="language-tsx">export const revalidate = 60;
+
+export default async function Page() {
+  const data = await fetch('...');
+  return &lt;div&gt;{data}&lt;/div&gt;;
+}</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card blue">
+      <h3>Streaming with Suspense</h3>
+      <pre><code class="language-tsx">import { Suspense } from 'react';
+
+export default function Page() {
+  return (
+    &lt;main&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+        &lt;SlowDataComponent /&gt;
+      &lt;/Suspense&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+    </div>
+    <div class="card red">
+      <h3>Partial Prerendering (PPR)</h3>
+      <ul>
+        <li>Combines static shell + dynamic holes</li>
+        <li>Static HTML served instantly from CDN</li>
+        <li>Dynamic parts stream in via Suspense</li>
+        <li>Experimental in Next.js 14/15</li>
+        <li>Best of all strategies in one route</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 10 — LAYOUTS & TEMPLATES ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">10</span><h2>Layouts &amp; Templates</h2></div>
+  <p>Next.js uses a <span class="a">nested layout system</span>. Layouts wrap child segments and persist across navigations — they don't re-render or lose state when the user moves between sibling routes.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Root Layout (required)</h3>
+      <pre><code class="language-tsx">// app/layout.tsx
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    &lt;html lang="en"&gt;
+      &lt;body&gt;
+        &lt;nav&gt;Site Navigation&lt;/nav&gt;
+        {children}
+      &lt;/body&gt;
+    &lt;/html&gt;
+  );
+}</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Nested Layout</h3>
+      <pre><code class="language-tsx">// app/dashboard/layout.tsx
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    &lt;div className="flex"&gt;
+      &lt;Sidebar /&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-3" style="margin-top:.3em;">
+    <div class="card purple">
+      <h3>loading.tsx</h3>
+      <pre><code class="language-tsx">// app/dashboard/loading.tsx
+export default function Loading() {
+  return &lt;Skeleton /&gt;;
+}
+// Auto-wrapped in Suspense</code></pre>
+    </div>
+    <div class="card blue">
+      <h3>error.tsx</h3>
+      <pre><code class="language-tsx">'use client';
+// app/dashboard/error.tsx
+export default function Error({
+  error, reset,
+}: {
+  error: Error; reset: () =&gt; void;
+}) {
+  return &lt;button onClick={reset}&gt;
+    Retry&lt;/button&gt;;
+}</code></pre>
+    </div>
+    <div class="card red">
+      <h3>not-found.tsx</h3>
+      <pre><code class="language-tsx">// app/dashboard/not-found.tsx
+export default function NotFound() {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Not Found&lt;/h2&gt;
+      &lt;p&gt;Could not find resource&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+    </div>
+  </div>
+  <div class="card amber" style="margin-top:.3em;">
+    <h3>Layout vs Template</h3>
+    <p><span class="a">Layouts</span> persist state across navigations. <span class="g">Templates</span> (<code>template.tsx</code>) create a new instance on every navigation — useful for animations, per-page analytics, or resetting form state.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 11 — MIDDLEWARE ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">11</span><h2>Middleware</h2></div>
+  <p>Next.js <span class="a">Middleware</span> runs <em>before</em> a request is completed. It executes at the <span class="g">edge</span> (close to the user) and can rewrite, redirect, modify headers, or block requests. Define it in <code>middleware.ts</code> at the project root.</p>
+  <div class="cols cols-6040">
+    <div class="card amber">
+      <h3>Middleware Example</h3>
+      <pre><code class="language-tsx">// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('session');
+
+  // Redirect unauthenticated users
+  if (!token &amp;&amp; request.nextUrl.pathname
+      .startsWith('/dashboard')) {
+    return NextResponse.redirect(
+      new URL('/login', request.url)
+    );
+  }
+
+  // Add custom headers
+  const response = NextResponse.next();
+  response.headers.set('x-pathname',
+    request.nextUrl.pathname);
+  return response;
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/api/:path*'],
+};</code></pre>
+    </div>
+    <div>
+      <div class="card green">
+        <h3>Common Use Cases</h3>
+        <ul>
+          <li><span class="a">Authentication</span> — redirect if no session</li>
+          <li><span class="g">A/B testing</span> — rewrite to variant pages</li>
+          <li><span class="p">Geolocation</span> — route by country/region</li>
+          <li><span class="b">Rate limiting</span> — block abusive requests</li>
+          <li><span class="r">Bot detection</span> — challenge suspicious traffic</li>
+          <li>i18n — redirect to locale-specific routes</li>
+        </ul>
+      </div>
+      <div class="card purple" style="margin-top:.3em;">
+        <h3>Matcher Config</h3>
+        <pre><code class="language-tsx">export const config = {
+  matcher: [
+    // Match all except static files
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Or specific paths
+    '/dashboard/:path*',
+    '/api/:path*',
+  ],
+};</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 12 — API ROUTES / ROUTE HANDLERS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">12</span><h2>API Routes / Route Handlers</h2></div>
+  <p>Route Handlers let you create <span class="a">custom API endpoints</span> using the Web <code>Request</code> and <code>Response</code> APIs. Define them in <code>route.ts</code> files inside the <code>app/</code> directory.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Basic CRUD</h3>
+      <pre><code class="language-tsx">// app/api/posts/route.ts
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+
+export async function GET() {
+  const posts = await db.post.findMany();
+  return NextResponse.json(posts);
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const post = await db.post.create({
+    data: body
+  });
+  return NextResponse.json(post, { status: 201 });
+}</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Dynamic Route Handler</h3>
+      <pre><code class="language-tsx">// app/api/posts/[id]/route.ts
+import { NextResponse } from 'next/server';
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const post = await db.post.findUnique({
+    where: { id: params.id }
+  });
+  if (!post) {
+    return NextResponse.json(
+      { error: 'Not found' }, { status: 404 }
+    );
+  }
+  return NextResponse.json(post);
+}</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card purple">
+      <h3>Streaming Response</h3>
+      <pre><code class="language-tsx">// app/api/stream/route.ts
+export async function GET() {
+  const stream = new ReadableStream({
+    async start(controller) {
+      for (const chunk of data) {
+        controller.enqueue(
+          new TextEncoder().encode(chunk)
+        );
+        await wait(100);
+      }
+      controller.close();
+    },
+  });
+  return new Response(stream);
+}</code></pre>
+    </div>
+    <div class="card blue">
+      <h3>Runtime Options</h3>
+      <table>
+        <thead><tr><th>Runtime</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><code>nodejs</code> (default)</td><td>Full Node.js APIs, DB drivers</td></tr>
+          <tr><td><code>edge</code></td><td>Low latency, limited APIs</td></tr>
+        </tbody>
+      </table>
+      <pre><code class="language-tsx">// Force edge runtime
+export const runtime = 'edge';</code></pre>
+      <p style="margin-top:.2em;">Supported HTTP methods: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>, <code>HEAD</code>, <code>OPTIONS</code></p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 13 — STYLING ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">13</span><h2>Styling</h2></div>
+  <p>Next.js supports multiple styling approaches out of the box. The choice depends on your team's preferences and whether components are <span class="a">Server</span> or <span class="g">Client</span> components.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>CSS Modules (recommended)</h3>
+      <pre><code class="language-css">/* app/components/Button.module.css */
+.primary {
+  background: #0070f3;
+  color: white;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+}</code></pre>
+      <pre><code class="language-tsx">import styles from './Button.module.css';
+
+export function Button({ children }) {
+  return (
+    &lt;button className={styles.primary}&gt;
+      {children}
+    &lt;/button&gt;
+  );
+}</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Tailwind CSS</h3>
+      <pre><code class="language-tsx">// Works in both Server & Client Components
+export function Card({ title, description }) {
+  return (
+    &lt;div className="rounded-lg border
+      bg-white p-6 shadow-sm"&gt;
+      &lt;h3 className="text-lg font-semibold
+        text-gray-900"&gt;{title}&lt;/h3&gt;
+      &lt;p className="mt-2 text-gray-600"&gt;
+        {description}
+      &lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      <p style="margin-top:.15em;">Tailwind is the most popular choice in the Next.js ecosystem and is included by default in <code>create-next-app</code>.</p>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card purple">
+      <h3>Global Styles</h3>
+      <pre><code class="language-tsx">// app/layout.tsx
+import './globals.css';
+
+export default function RootLayout({ children }) {
+  return &lt;html&gt;&lt;body&gt;{children}&lt;/body&gt;&lt;/html&gt;;
+}</code></pre>
+    </div>
+    <div class="card red">
+      <h3>CSS-in-JS Limitations</h3>
+      <ul>
+        <li>Libraries like styled-components, Emotion require <code>"use client"</code></li>
+        <li>Cannot be used in Server Components</li>
+        <li>Runtime CSS-in-JS adds JS bundle weight</li>
+        <li>Consider CSS Modules or Tailwind for RSC-first apps</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 14 — IMAGE & FONT OPTIMISATION ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">14</span><h2>Image &amp; Font Optimisation</h2></div>
+  <p>Next.js provides built-in components for <span class="a">automatic image optimisation</span> and <span class="g">zero-layout-shift font loading</span> that significantly improve Core Web Vitals.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>next/image</h3>
+      <pre><code class="language-tsx">import Image from 'next/image';
+
+export function Hero() {
+  return (
+    &lt;Image
+      src="/hero.jpg"
+      alt="Hero image"
+      width={1200}
+      height={600}
+      priority          // LCP image
+      placeholder="blur" // blur-up effect
+    /&gt;
+  );
+}
+
+// Remote images
+const nextConfig = {
+  images: {
+    remotePatterns: [{
+      protocol: 'https',
+      hostname: 'cdn.example.com',
+    }],
+  },
+};</code></pre>
+    </div>
+    <div class="card green">
+      <h3>next/font</h3>
+      <pre><code class="language-tsx">// app/layout.tsx
+import { Inter, Playfair_Display }
+  from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+});
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html className={`${inter.variable}
+      ${playfair.variable}`}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  );
+}</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card blue">
+      <h3>Image Features</h3>
+      <ul>
+        <li>Automatic WebP/AVIF conversion</li>
+        <li>Responsive <code>srcSet</code> generation</li>
+        <li>Lazy loading by default</li>
+        <li>Prevents Cumulative Layout Shift</li>
+        <li>On-demand resizing at the edge</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3>Font Features</h3>
+      <ul>
+        <li>Self-hosted (no external requests)</li>
+        <li>Zero layout shift via <code>size-adjust</code></li>
+        <li>Automatic subsetting</li>
+        <li>Works with Google Fonts &amp; local files</li>
+        <li>CSS variable support for Tailwind</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 15 — METADATA & SEO ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">15</span><h2>Metadata &amp; SEO</h2></div>
+  <p>Next.js provides a powerful <span class="a">Metadata API</span> for defining SEO tags, Open Graph images, and structured data. Metadata can be static or <span class="g">dynamically generated</span> per page.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Static Metadata</h3>
+      <pre><code class="language-tsx">// app/layout.tsx
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'My App',
+    template: '%s | My App',
+  },
+  description: 'Built with Next.js',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://myapp.com',
+    siteName: 'My App',
+  },
+};</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Dynamic Metadata</h3>
+      <pre><code class="language-tsx">// app/blog/[slug]/page.tsx
+import type { Metadata } from 'next';
+
+export async function generateMetadata(
+  { params }: { params: { slug: string } }
+): Promise&lt;Metadata&gt; {
+  const post = await getPost(params.slug);
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      images: [post.coverImage],
+    },
+  };
+}</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-3" style="margin-top:.3em;">
+    <div class="card purple">
+      <h3>JSON-LD</h3>
+      <pre><code class="language-tsx">export default function Page() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'My Post',
+    author: { '@type': 'Person',
+      name: 'Author' },
+  };
+  return (
+    &lt;script type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(jsonLd),
+      }}
+    /&gt;
+  );
+}</code></pre>
+    </div>
+    <div class="card blue">
+      <h3>Sitemap</h3>
+      <pre><code class="language-tsx">// app/sitemap.ts
+export default async function sitemap() {
+  const posts = await getPosts();
+  return [
+    { url: 'https://myapp.com',
+      lastModified: new Date() },
+    ...posts.map(post =&gt; ({
+      url: `https://myapp.com/blog/
+        ${post.slug}`,
+      lastModified: post.updatedAt,
+    })),
+  ];
+}</code></pre>
+    </div>
+    <div class="card red">
+      <h3>robots.ts</h3>
+      <pre><code class="language-tsx">// app/robots.ts
+export default function robots() {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: '/admin/',
+    },
+    sitemap:
+      'https://myapp.com/sitemap.xml',
+  };
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 16 — AUTHENTICATION ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">16</span><h2>Authentication Patterns</h2></div>
+  <p>Authentication in Next.js typically combines <span class="a">Middleware</span> for route protection, <span class="g">Server Components</span> for session checks, and a library like <span class="p">Auth.js</span> (NextAuth.js v5) for the auth logic.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Auth.js Setup</h3>
+      <pre><code class="language-tsx">// auth.ts
+import NextAuth from 'next-auth';
+import GitHub from 'next-auth/providers/github';
+import { PrismaAdapter } from
+  '@auth/prisma-adapter';
+import { prisma } from '@/lib/prisma';
+
+export const { handlers, signIn, signOut, auth }
+  = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  providers: [GitHub],
+});
+
+// app/api/auth/[...nextauth]/route.ts
+import { handlers } from '@/auth';
+export const { GET, POST } = handlers;</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Middleware Protection</h3>
+      <pre><code class="language-tsx">// middleware.ts
+import { auth } from './auth';
+
+export default auth((req) =&gt; {
+  if (!req.auth &amp;&amp;
+    req.nextUrl.pathname !== '/login') {
+    const loginUrl = new URL('/login',
+      req.nextUrl.origin);
+    return Response.redirect(loginUrl);
+  }
+});
+
+export const config = {
+  matcher: ['/dashboard/:path*'],
+};</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card purple">
+      <h3>Server Component Session</h3>
+      <pre><code class="language-tsx">// app/dashboard/page.tsx
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+
+export default async function Dashboard() {
+  const session = await auth();
+  if (!session) redirect('/login');
+
+  return &lt;h1&gt;Welcome, {session.user.name}&lt;/h1&gt;;
+}</code></pre>
+    </div>
+    <div class="card blue">
+      <h3>Auth Strategies</h3>
+      <table>
+        <thead><tr><th>Strategy</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td>JWT sessions</td><td>Stateless, edge-compatible</td></tr>
+          <tr><td>Database sessions</td><td>Revocable, secure</td></tr>
+          <tr><td>OAuth providers</td><td>Social login (GitHub, Google)</td></tr>
+          <tr><td>Credentials</td><td>Email/password (use with care)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 17 — DATABASE & ORM ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">17</span><h2>Database &amp; ORM Integration</h2></div>
+  <p>Next.js Server Components and Server Actions provide <span class="a">direct database access</span> without an intermediate API layer. The two most popular ORMs in the ecosystem are <span class="g">Prisma</span> and <span class="p">Drizzle</span>.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Prisma</h3>
+      <pre><code class="language-tsx">// prisma/schema.prisma
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId],
+                      references: [id])
+  authorId  String
+}
+
+// lib/db.ts
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown
+  as { prisma: PrismaClient };
+
+export const prisma = globalForPrisma.prisma
+  || new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production')
+  globalForPrisma.prisma = prisma;</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Drizzle</h3>
+      <pre><code class="language-tsx">// db/schema.ts
+import { pgTable, text, boolean, timestamp }
+  from 'drizzle-orm/pg-core';
+
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content'),
+  published: boolean('published').default(false),
+  createdAt: timestamp('created_at')
+    .defaultNow(),
+});
+
+// db/index.ts
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+export const db = drizzle(pool);</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card purple">
+      <h3>server-only Pattern</h3>
+      <pre><code class="language-tsx">// lib/db.ts — prevent client import
+import 'server-only';
+import { prisma } from './prisma';
+
+export async function getPosts() {
+  return prisma.post.findMany({
+    where: { published: true },
+    orderBy: { createdAt: 'desc' },
+  });
+}</code></pre>
+    </div>
+    <div class="card blue">
+      <h3>Connection Pooling</h3>
+      <ul>
+        <li>Serverless functions create many connections</li>
+        <li>Use <span class="a">PgBouncer</span> or <span class="g">Prisma Accelerate</span></li>
+        <li>Neon, Supabase, PlanetScale offer built-in pooling</li>
+        <li>Cache the client on <code>globalThis</code> in dev</li>
+        <li>Set <code>connection_limit=1</code> per serverless instance</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 18 — TESTING ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">18</span><h2>Testing</h2></div>
+  <p>A solid Next.js testing strategy covers <span class="a">unit tests</span> (components/utilities), <span class="g">integration tests</span> (API routes, server actions), and <span class="p">end-to-end tests</span> (full user flows).</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Vitest + React Testing Library</h3>
+      <pre><code class="language-tsx">// __tests__/components/button.test.tsx
+import { render, screen } from
+  '@testing-library/react';
+import userEvent from
+  '@testing-library/user-event';
+import { Button } from '@/components/button';
+
+describe('Button', () =&gt; {
+  it('handles click events', async () =&gt; {
+    const onClick = vi.fn();
+    render(&lt;Button onClick={onClick}&gt;
+      Click me&lt;/Button&gt;);
+
+    await userEvent.click(
+      screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+});</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Playwright (E2E)</h3>
+      <pre><code class="language-tsx">// e2e/blog.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('can create a blog post', async ({ page }) =&gt; {
+  await page.goto('/posts/new');
+  await page.fill('[name="title"]',
+    'Test Post');
+  await page.fill('[name="content"]',
+    'Hello world');
+  await page.click('button[type="submit"]');
+
+  await expect(page).toHaveURL(/\/posts\//);
+  await expect(
+    page.getByText('Test Post')
+  ).toBeVisible();
+});</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card purple">
+      <h3>MSW (Mock Service Worker)</h3>
+      <pre><code class="language-tsx">// mocks/handlers.ts
+import { http, HttpResponse } from 'msw';
+
+export const handlers = [
+  http.get('/api/posts', () =&gt; {
+    return HttpResponse.json([
+      { id: '1', title: 'Mock Post' },
+    ]);
+  }),
+];</code></pre>
+    </div>
+    <div class="card blue">
+      <h3>Testing Strategy</h3>
+      <table>
+        <thead><tr><th>Layer</th><th>Tool</th><th>What to Test</th></tr></thead>
+        <tbody>
+          <tr><td>Unit</td><td>Vitest</td><td>Utils, hooks, components</td></tr>
+          <tr><td>Integration</td><td>Vitest + RTL</td><td>Pages, API routes</td></tr>
+          <tr><td>E2E</td><td>Playwright</td><td>Full user flows</td></tr>
+          <tr><td>API mocking</td><td>MSW</td><td>External services</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 19 — DEPLOYMENT ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">19</span><h2>Deployment</h2></div>
+  <p>Next.js can be deployed to <span class="a">Vercel</span> (zero-config), <span class="g">self-hosted</span> with Node.js, or <span class="p">containerised</span> with Docker. Each option has different trade-offs for features like ISR, Middleware, and Edge Runtime.</p>
+  <div class="cols cols-3">
+    <div class="card amber">
+      <h3>Vercel (recommended)</h3>
+      <ul>
+        <li>Zero configuration deployment</li>
+        <li>Automatic edge network</li>
+        <li>Built-in ISR &amp; image optimisation</li>
+        <li>Preview deployments per PR</li>
+        <li>Analytics &amp; speed insights</li>
+        <li>Serverless &amp; edge functions</li>
+      </ul>
+      <pre><code class="language-bash"># Deploy with Vercel CLI
+npx vercel</code></pre>
+    </div>
+    <div class="card green">
+      <h3>Self-Hosted (Node.js)</h3>
+      <ul>
+        <li>Full control over infrastructure</li>
+        <li>All features supported</li>
+        <li>Requires own CDN for caching</li>
+        <li>Manual scaling &amp; monitoring</li>
+      </ul>
+      <pre><code class="language-bash"># Build and start
+npm run build
+npm start
+# Runs on port 3000 by default</code></pre>
+    </div>
+    <div class="card purple">
+      <h3>Docker</h3>
+      <pre><code class="language-dockerfile">FROM node:20-alpine AS base
+
+FROM base AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static \
+  ./.next/static
+
+EXPOSE 3000
+CMD ["node", "server.js"]</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card blue">
+      <h3>Environment Variables</h3>
+      <table>
+        <thead><tr><th>Prefix</th><th>Available</th></tr></thead>
+        <tbody>
+          <tr><td><code>NEXT_PUBLIC_*</code></td><td>Client + Server (inlined at build)</td></tr>
+          <tr><td>No prefix</td><td>Server only (secrets safe)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card red">
+      <h3>Edge vs Node Runtime</h3>
+      <table>
+        <thead><tr><th>Aspect</th><th>Node.js</th><th>Edge</th></tr></thead>
+        <tbody>
+          <tr><td>Cold start</td><td>~250ms</td><td>~0ms</td></tr>
+          <tr><td>APIs</td><td>Full Node.js</td><td>Web APIs only</td></tr>
+          <tr><td>Max duration</td><td>Minutes</td><td>Seconds</td></tr>
+          <tr><td>Best for</td><td>Heavy compute, DB</td><td>Auth, redirects</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 20 — SUMMARY & NEXT STEPS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">20</span><h2>Summary &amp; Next Steps</h2></div>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li><span class="a">App Router</span> is the modern default — use it for new projects</li>
+        <li><span class="g">Server Components</span> reduce bundle size and enable direct data access</li>
+        <li><span class="p">Server Actions</span> eliminate boilerplate API routes for mutations</li>
+        <li>Multiple <span class="b">rendering strategies</span> (SSG, SSR, ISR, streaming) per route</li>
+        <li>Built-in <span class="a">image</span>, <span class="g">font</span>, and <span class="p">metadata</span> optimisation</li>
+        <li>Middleware runs at the edge for auth, redirects, and A/B tests</li>
+        <li>Deploy anywhere — Vercel, Docker, or bare Node.js</li>
+      </ul>
+    </div>
+    <div>
+      <div class="card green">
+        <h3>Essential Resources</h3>
+        <ul>
+          <li><a href="https://nextjs.org/docs" style="color:var(--green);">nextjs.org/docs</a> — Official documentation</li>
+          <li><a href="https://nextjs.org/learn" style="color:var(--green);">nextjs.org/learn</a> — Interactive tutorial</li>
+          <li><a href="https://github.com/vercel/next.js" style="color:var(--green);">github.com/vercel/next.js</a> — Source &amp; examples</li>
+          <li><a href="https://vercel.com/templates" style="color:var(--green);">vercel.com/templates</a> — Starter templates</li>
+        </ul>
+      </div>
+      <div class="card purple" style="margin-top:.3em;">
+        <h3>Recommended Next Steps</h3>
+        <ul>
+          <li>Run <code>npx create-next-app@latest</code> and explore</li>
+          <li>Build a blog with App Router &amp; Server Actions</li>
+          <li>Add Auth.js authentication</li>
+          <li>Deploy to Vercel with a database (Neon/Supabase)</li>
+          <li>Write E2E tests with Playwright</li>
+          <li>Experiment with Partial Prerendering</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p style="text-align:center; margin-top:.5em; color:var(--muted); font-size:.5em;">
+    <span class="a">Thank you!</span> &mdash; Built with Reveal.js &middot; Single self-contained HTML file
+  </p>
+</section>
+
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/monokai.min.css">
+<script>
+Reveal.initialize({
+  hash: true, transition: 'fade', transitionSpeed: 'fast', controls: true, progress: true,
+  center: false, width: 1100, height: 900, margin: 0.01,
+  plugins: [RevealHighlight], highlight: { theme: 'monokai' }
+});
+</script>
+<script>
+(function(){
+  var h = Reveal.getConfig().height || 900;
+  var m = Reveal.getConfig().margin || 0.02;
+  var maxH = Math.floor(h * (1 - 2 * m)) + 'px';
+  function fixSlides(){
+    document.querySelectorAll('.reveal .slides>section,.reveal .slides>section>section').forEach(function(s){
+      s.style.display = 'block'; s.style.maxHeight = maxH;
+    });
+  }
+  Reveal.on('ready', fixSlides);
+  Reveal.on('slidechanged', fixSlides);
+})();
+</script>
+</body>
+</html>
